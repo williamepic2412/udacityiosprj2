@@ -7,11 +7,22 @@
 
 import SwiftUI
 
+struct Event: Identifiable, Comparable, Hashable {
+    var id: UUID
+    var title: String
+    var date: Date
+    var textColor: Color
+
+    static func < (lhs: Event, rhs: Event) -> Bool {
+        return lhs.date < rhs.date
+    }
+}
+
 @main
 struct eventcountdownApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EventsView()
         }
     }
 }

@@ -32,13 +32,13 @@ struct EventForm: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 Section(header: Text("Event Details")) {
                     TextField("Title", text: $title)
                         .foregroundColor(textColor)
                     
-                    DatePicker("Date", selection: $date, displayedComponents: .date)
+                    DatePicker("Date", selection: $date)
                     
                     ColorPicker("Text Color", selection: $textColor)
                 }
@@ -48,6 +48,11 @@ struct EventForm: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         saveEvent()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
             }
@@ -65,9 +70,19 @@ struct EventForm: View {
 
     private func saveEvent() {
         guard !title.isEmpty else { return } // Ensure title is not empty
+
+        switch mode {
+        case .add:
+            let newEvent = Event(id: UUID(), title: title, date: date, textColor: textColor)
+            onSave(newEvent)
+            dismiss()
+        case .edit(var event):
+            event.title = title
+            event.date = date
+            event.textColor = textColor
+            onSave(event)
+            dismiss()
+        }
         
-        let newEvent = Event(id: UUID(), title: title, date: date, textColor: textColor)
-        onSave(newEvent)
-        dismiss()
     }
 }

@@ -14,19 +14,26 @@ struct EventsView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(events.sorted()) { event in
-                    NavigationLink(destination: EventForm(mode:.edit(event), onSave: { updatedEvent in
-                        // Update the event in the array
-                        if let index = events.firstIndex(where: { $0.id == updatedEvent.id }) {
-                            events[index] = updatedEvent
-                        }
-                    })) {
-                        EventRow(event: event)
+                if events.isEmpty {
+                    ContentUnavailableView {
+                        showingEventForm = true
                     }
+                } else {
+                    ForEach(events.sorted()) { event in
+                        NavigationLink(value: event) {
+                            EventRow(event: event)
+                        }
+                    }
+                    .onDelete(perform: deleteEvent)
                 }
-                .onDelete(perform: deleteEvent)
             }
-            .navigationTitle("Events")
+            .navigationDestination(for: Event.self) { event in
+                EventForm(mode: .edit(event), onSave: { updatedEvent in
+                    if let index = events.firstIndex(where: { $0.id == updatedEvent.id }) {
+                        events[index] = updatedEvent
+                    }
+                })
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -36,8 +43,9 @@ struct EventsView: View {
                     }
                 }
             }
+            .navigationTitle("Events")
             .sheet(isPresented: $showingEventForm) {
-                EventForm(mode:.add, onSave: { newEvent in
+                EventForm(mode: .add, onSave: { newEvent in
                     events.append(newEvent) // Add the new event to the array
                     showingEventForm = false
                 })

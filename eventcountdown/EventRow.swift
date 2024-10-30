@@ -39,7 +39,7 @@ struct EventRow: View {
     @State private var timer: Timer?
     
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             updateCountdown()
         }
     }
